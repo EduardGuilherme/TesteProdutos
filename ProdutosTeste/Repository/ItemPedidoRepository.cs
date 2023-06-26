@@ -1,33 +1,53 @@
-﻿using TesteProdutos.Model;
+﻿using Microsoft.EntityFrameworkCore;
+using TesteProdutos.Data;
+using TesteProdutos.Model;
 using TesteProdutos.Repository.Intefaces;
 
 namespace TesteProdutos.Repository
 {
     public class ItemPedidoRepository : IItemPedidoRepository
     {
-        public void AddItemPedido(ItemPedido itemPedido)
+        private readonly TesteProdutosDBContext _context;
+
+        public ItemPedidoRepository(TesteProdutosDBContext context)
         {
-            throw new NotImplementedException();
+            _context= context;
+        }
+        public async Task<List<ItemPedido>> GetItensPedido()
+        {
+            return await _context.ItemPedido.ToListAsync();
         }
 
-        public void DeleteItemPedido(int id)
+        public async Task<ItemPedido> GetItemPedidoById(int id)
         {
-            throw new NotImplementedException();
+            return await _context.ItemPedido.FindAsync(id);
         }
 
-        public ItemPedido GetItemPedidoById(int id)
+        public async Task<ItemPedido> AddItemPedido(ItemPedido itemPedido)
         {
-            throw new NotImplementedException();
+            _context.ItemPedido.Add(itemPedido);
+            await _context.SaveChangesAsync();
+            return itemPedido;
         }
 
-        public IEnumerable<ItemPedido> GetItensPedido()
+        public async Task<ItemPedido> UpdateItemPedido(ItemPedido itemPedido)
         {
-            throw new NotImplementedException();
+            _context.Entry(itemPedido).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return itemPedido;
         }
 
-        public void UpdateItemPedido(ItemPedido itemPedido)
+        public async Task<bool> DeleteItemPedido(int id)
         {
-            throw new NotImplementedException();
+            var itemPedido = await _context.ItemPedido.FindAsync(id);
+            if (itemPedido == null)
+                return false;
+
+            _context.ItemPedido.Remove(itemPedido);
+            if (itemPedido != null)
+                throw new Exception($"O ItemPedido Removido com sucesso!");
+            await _context.SaveChangesAsync();
+            return true;
         }
     }
 }

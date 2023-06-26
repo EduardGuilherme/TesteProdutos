@@ -8,8 +8,8 @@ namespace TesteProdutos.Repository.Intefaces
         void AtualizaPedido(int id);
         Task<List<Pedido>> GetPedidos();
         Task<Pedido> GetPedidoById(int id);
-        Task<Produto> AddPedido(Produto produto);
-        Task<Produto> UpdatePedido(Produto produto, int id);
+        Task<Pedido> AddPedido(Pedido pedido);
+        Task<Pedido> UpdatePedido(Pedido pedido, int id);
         Task<bool> DeletePedido(int id);
     }
 }

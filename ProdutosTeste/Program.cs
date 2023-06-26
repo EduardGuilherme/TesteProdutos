@@ -24,6 +24,8 @@ namespace ProdutosTeste
                );
 
             builder.Services.AddScoped<IProdutoRepository, ProdutoRepository>();
+            builder.Services.AddScoped<IItemPedidoRepository, ItemPedidoRepository>();
+            builder.Services.AddScoped<IPedidoRepository, PedidoRepository>();
 
             var app = builder.Build();
 

@@ -26,43 +26,70 @@ namespace TesteProdutos.Repository
 
         public decimal CalcPedido(int id)
         {
-            var pedido = _context.Pedidos.Include(p => p.Itens)
-                                     .FirstOrDefault(p => p.PedidoId == id);
-
+            var pedido = _context.Pedidos.Include(p => p.Itens).FirstOrDefault(p => p.PedidoId == id);
             if (pedido == null)
-                throw new Exception("Pedido não encontrado");
+                return 0;
 
-            decimal valorTotal = pedido.Itens.Sum(ip => ip.Valor * ip.Quantidade);
+            decimal total = 0;
+            foreach (var item in pedido.Itens)
+            {
+                total += item.Quantidade * item.Valor;
+            }
 
-            return valorTotal;
+            pedido.ValorTotal = total;
+            _context.SaveChanges();
+
+            return total;
         }
 
         public void AtualizaPedido(int id)
         {
-            var pedido = _context.Pedidos.Include(p => p.Itens)
-                                     .FirstOrDefault(p => p.PedidoId == id);
-
+            var pedido = _context.Pedidos.FirstOrDefault(p => p.PedidoId == id);
             if (pedido == null)
-                throw new Exception("Pedido não encontrado");
+                return;
 
-            decimal valorTotal = pedido.Itens.Sum(ip => ip.Valor * ip.Quantidade);
-            pedido.ValorTotal = valorTotal;
-
+            pedido.ValorTotal = CalcPedido(id);
             _context.SaveChanges();
         }
-        public Task<Produto> AddPedido(Produto produto)
+        public async Task<Pedido> AddPedido(Pedido pedido)
         {
-            throw new NotImplementedException();
+            await _context.Pedidos.AddRangeAsync(pedido);
+            await _context.SaveChangesAsync();
+            return pedido;
         }
 
-        public Task<bool> DeletePedido(int id)
+        public async Task<bool> DeletePedido(int id)
         {
-            throw new NotImplementedException();
+            Pedido pedidoId = await GetPedidoById(id);
+            if (pedidoId == null)
+            {
+                throw new Exception($"O Pedido com o ID:{id} enviado não foi encontrado");
+            }
+
+            _context.Pedidos.Remove(pedidoId);
+
+            if (pedidoId != null)
+            {
+                throw new Exception($"O Pedido Removido com sucesso!");
+            }
+            await _context.SaveChangesAsync();
+            return true;
         }
 
-        public Task<Produto> UpdatePedido(Produto produto, int id)
+        public async Task<Pedido> UpdatePedido(Pedido pedido, int id)
         {
-            throw new NotImplementedException();
+            Pedido pedidoId = await GetPedidoById(id);
+            if (pedidoId == null)
+            {
+                throw new Exception($"O Pedido com o ID:{id} enviado não foi encontrado");
+            }
+            pedidoId.Descricao = pedido.Descricao;
+            pedidoId.Identificador = pedido.Identificador;
+            
+
+            _context.Pedidos.Update(pedidoId);
+            await _context.SaveChangesAsync();
+            return pedidoId;
         }
 
        

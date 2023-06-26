@@ -52,6 +52,11 @@ namespace TesteProdutos.Repository
             }
 
             _context.Produtos.Remove(produtiId);
+
+            if(produtiId != null)
+            {
+                throw new Exception($"O Produto Removido com sucesso!");
+            }
             await _context.SaveChangesAsync();  
             return true;
         }
